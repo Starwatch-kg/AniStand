@@ -1,40 +1,47 @@
-# FastAPI и основные зависимости
+# Web Framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
 pydantic-settings==2.1.0
 
-# База данных
+# Database
 sqlalchemy==2.0.23
 asyncpg==0.29.0
 alembic==1.13.1
 
-# Аутентификация и безопасность
+# Authentication
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 
-# HTTP клиент для парсинга
+# HTTP Clients
 httpx==0.25.2
 aiohttp==3.9.1
 beautifulsoup4==4.12.2
-lxml==4.9.3
+lxml==5.1.0
 
-# Кеширование
+# Caching
 redis==5.0.1
 aioredis==2.0.1
 
-# Планировщик задач
+# Task Scheduler
 celery==5.3.4
-celery[redis]==5.3.4
 
-# Утилиты
+# Utilities
 python-dotenv==1.0.0
 loguru==0.7.2
 slowapi==0.1.9
 
-# Для работы с изображениями
+# Image Processing
 Pillow==10.1.0
 
-# Валидация и форматирование
-email-validator==2.1.0
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+
+# Testing
+httpx==0.25.2
+pytest-mock==3.12.0
