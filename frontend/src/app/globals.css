@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Anime theme styles */
+.anime-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
+}
+
+.anime-card:hover {
+  @apply transform scale-105 transition-transform duration-300;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-anime-purple to-anime-pink bg-clip-text text-transparent;
+}
+
+.anime-button {
+  @apply bg-gradient-to-r from-anime-purple to-anime-pink text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity;
+}
