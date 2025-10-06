@@ -49,8 +49,25 @@ export const AnimeDetails: React.FC = () => {
   };
 
   const handleWatchEpisode = (episodeNumber: number) => {
+    console.log('Navigating to watch:', anime.id, episodeNumber);
     navigate(`/watch/${anime.id}/${episodeNumber}`);
   };
+
+  // Если нет эпизодов из API, создаем демо-эпизоды
+  const displayEpisodes = episodes.length > 0 ? episodes : 
+    Array.from({ length: anime.episodes || 12 }, (_, i) => ({
+      id: `demo-${i + 1}`,
+      number: i + 1,
+      title: `Эпизод ${i + 1}`,
+      thumbnail: anime.coverImage.large,
+      sources: [{
+        id: 'demo',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        quality: '1080p',
+        type: 'mp4' as const
+      }],
+      duration: 1440,
+    }));
 
   return (
     <Layout>
@@ -280,17 +297,17 @@ export const AnimeDetails: React.FC = () => {
         </div>
 
         {/* Episodes with enhanced design */}
-        {episodes.length > 0 && (
+        {displayEpisodes.length > 0 && (
           <div className="mt-16">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-3xl font-bold text-white flex items-center gap-3">
                 <Film size={32} className="text-primary" />
                 Эпизоды
-                <span className="text-gray-400 text-2xl">({episodes.length})</span>
+                <span className="text-gray-400 text-2xl">({displayEpisodes.length})</span>
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {episodes.map((episode) => (
+              {displayEpisodes.map((episode) => (
                 <div
                   key={episode.id}
                   onClick={() => handleWatchEpisode(episode.number)}

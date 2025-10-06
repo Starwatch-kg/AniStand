@@ -859,3 +859,423 @@ select:focus-visible {
 .pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
 }
+
+/* ============================================
+   PAGE TRANSITIONS
+   ============================================ */
+
+/* Fade Slide Transition */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.98);
+  }
+}
+
+/* Slide From Right */
+@keyframes page-slide-right-in {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes page-slide-right-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+}
+
+/* Zoom Fade */
+@keyframes page-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes page-zoom-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+/* Blur Fade */
+@keyframes page-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes page-blur-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.05);
+  }
+}
+
+/* Rotate Fade */
+@keyframes page-rotate-in {
+  from {
+    opacity: 0;
+    transform: rotateX(20deg) translateY(50px);
+    transform-origin: center top;
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(0) translateY(0);
+  }
+}
+
+@keyframes page-rotate-out {
+  from {
+    opacity: 1;
+    transform: rotateX(0) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: rotateX(-20deg) translateY(-50px);
+    transform-origin: center top;
+  }
+}
+
+/* Page Transition Classes */
+.page-transition {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.page-transition.fade-in {
+  animation: page-blur-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.page-transition.fade-out {
+  animation: page-blur-out 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Smooth Page Wrapper */
+.page-wrapper {
+  animation: page-fade-in 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-wrapper-slide {
+  animation: page-slide-right-in 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-wrapper-zoom {
+  animation: page-zoom-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-wrapper-rotate {
+  animation: page-rotate-in 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  perspective: 1000px;
+}
+
+/* Stagger Children Animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: page-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Route Change Loading Bar */
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.route-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #e50914, transparent);
+  z-index: 9999;
+  animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   INTERACTIVE ELEMENTS ANIMATIONS
+   ============================================ */
+
+/* Button Press Animation */
+@keyframes button-press {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.btn-press:active {
+  animation: button-press 0.2s ease;
+}
+
+/* Link Hover Underline */
+.link-animated {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.link-animated::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #e50914, #ff1f29);
+  transition: width 0.3s ease;
+}
+
+.link-animated:hover::after {
+  width: 100%;
+}
+
+/* Card Flip Animation */
+@keyframes card-flip {
+  0% {
+    transform: rotateY(0);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+.card-flip {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-flip:hover {
+  transform: rotateY(10deg);
+}
+
+/* Magnetic Button Effect */
+@keyframes magnetic-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(229, 9, 20, 0);
+  }
+}
+
+.btn-magnetic {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-magnetic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-magnetic:hover::before {
+  opacity: 1;
+}
+
+.btn-magnetic:active {
+  animation: magnetic-pulse 0.6s ease;
+}
+
+/* Smooth Scroll Behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Page Enter/Exit Animations */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Reveal on Scroll */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Parallax Effect */
+.parallax {
+  transition: transform 0.3s ease-out;
+}
+
+/* Cursor Trail Effect */
+.cursor-trail {
+  pointer-events: none;
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.5), transparent);
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  animation: cursor-fade 1s ease-out forwards;
+}
+
+@keyframes cursor-fade {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2);
+  }
+}
+
+/* ============================================
+   MODAL ANIMATIONS
+   ============================================ */
+
+/* Modal Backdrop Fade */
+@keyframes modal-backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-backdrop-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Modal Content Scale */
+@keyframes modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+/* Modal Slide Up */
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-enter {
+  animation: modal-scale-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-exit {
+  animation: modal-scale-out 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}

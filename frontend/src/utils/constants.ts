@@ -1,7 +1,7 @@
 export const API_CONFIG = {
   ANILIST_URL: 'https://graphql.anilist.co',
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  TIMEOUT: 10000,
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1',
+  TIMEOUT: 30000,
 };
 
 export const GENRES = [

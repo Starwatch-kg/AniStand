@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Play, TrendingUp, Star, Calendar } from 'lucide-react';
-import { animeApi, Anime, healthCheck } from '@/lib/api';
+import { animeService } from '@/services/animeService';
+import { Anime } from '@/types/anime';
+import { apiClient } from '@/services/api';
 import AnimeGrid from '@/components/anime/AnimeGrid';
 
 export default function HomePage() {
@@ -17,24 +19,24 @@ export default function HomePage() {
     const loadData = async () => {
       try {
         // Проверяем статус API
-        await healthCheck();
+        await apiClient.get('/health');
         setApiStatus('online');
 
-        // Загружаем популярные аниме
-        const popularResponse = await animeApi.getList({
+        // Загружаем популярные аниме через backend
+        const popularResponse = await animeService.getAnimeListFromBackend({
           page: 1,
-          limit: 12,
-          sort: 'popularity'
+          perPage: 12,
+          sort: 'POPULARITY_DESC'
         });
-        setPopularAnime(popularResponse.data);
+        setPopularAnime(popularResponse.media);
 
-        // Загружаем недавние аниме
-        const recentResponse = await animeApi.getList({
+        // Загружаем недавние аниме через backend
+        const recentResponse = await animeService.getAnimeListFromBackend({
           page: 1,
-          limit: 12,
-          sort: 'year'
+          perPage: 12,
+          sort: 'UPDATED_AT_DESC'
         });
-        setRecentAnime(recentResponse.data);
+        setRecentAnime(recentResponse.media);
 
       } catch (err) {
         console.error('Error loading data:', err);

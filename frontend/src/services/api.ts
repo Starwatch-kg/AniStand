@@ -29,11 +29,27 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    
+    // Handle different error statuses
+    if (status === 401) {
       storage.clearAll();
       window.location.href = '/login';
+    } else if (status === 403) {
+      console.error('Access forbidden');
+    } else if (status === 404) {
+      console.error('Resource not found');
+    } else if (status && status >= 500) {
+      console.error('Server error');
     }
-    return Promise.reject(error);
+    
+    // Enhance error message
+    const enhancedError: any = error;
+    if (error.response?.data) {
+      enhancedError.message = (error.response.data as any).detail || error.message;
+    }
+    
+    return Promise.reject(enhancedError);
   }
 );
 

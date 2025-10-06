@@ -17,16 +17,16 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const variants = {
-    primary: 'bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white shadow-glow hover:shadow-glow-lg transform hover:scale-105 transition-all duration-300',
-    secondary: 'bg-dark-lighter hover:bg-gray-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white hover:shadow-glow transition-all duration-300 transform hover:scale-105',
-    ghost: 'text-gray-300 hover:bg-dark-lighter hover:text-white transition-all duration-300',
+    primary: 'bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white shadow-primary hover:shadow-primary-lg transform hover:scale-110 transition-all duration-300 btn-magnetic btn-press',
+    secondary: 'glass-morphism hover:bg-white/20 text-white shadow-depth-md hover:shadow-depth-lg transform hover:scale-110 transition-all duration-300 btn-magnetic btn-press border border-white/10',
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white hover:shadow-primary transition-all duration-300 transform hover:scale-110 btn-press',
+    ghost: 'text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 btn-press',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-5 py-2.5 text-base',
+    lg: 'px-8 py-4 text-lg',
   };
 
   return (
@@ -36,7 +36,8 @@ export const Button: React.FC<ButtonProps> = ({
         ${sizes[size]}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         font-bold rounded-xl relative overflow-hidden
-        before:absolute before:inset-0 before:bg-white/10 before:translate-y-full hover:before:translate-y-0 before:transition-transform before:duration-300
+        before:absolute before:inset-0 before:bg-white/10 before:translate-y-full hover:before:translate-y-0 before:transition-transform before:duration-500
+        after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent after:translate-x-[-200%] hover:after:translate-x-[200%] after:transition-transform after:duration-700
         ${className}
       `}
       disabled={disabled || isLoading}

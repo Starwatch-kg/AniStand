@@ -15,7 +15,8 @@ export interface AuthState {
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
+  email?: string;
   password: string;
 }
 

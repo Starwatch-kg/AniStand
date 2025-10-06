@@ -1,7 +1,7 @@
 'use client';
 
-import { Anime } from '@/lib/api';
-import AnimeCard from './AnimeCard';
+import { Anime } from '@/types/anime';
+import { AnimeCard } from './AnimeCard';
 import { Loader2 } from 'lucide-react';
 
 interface AnimeGridProps {

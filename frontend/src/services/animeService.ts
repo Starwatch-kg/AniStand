@@ -1,4 +1,4 @@
-import { anilistClient, jikanClient } from './api';
+import { apiClient, anilistClient, jikanClient } from './api';
 import { Anime, AnimeFilters, AnimePage, Episode } from '@/types';
 
 const ANIME_FIELDS = `
@@ -315,5 +315,126 @@ export const animeService = {
         ],
       };
     });
+  },
+
+  // Backend API methods
+  async getAnimeListFromBackend(filters: AnimeFilters): Promise<AnimePage> {
+    try {
+      const params: any = {
+        page: filters.page || 1,
+        limit: filters.perPage || 20,
+      };
+      
+      if (filters.genres && filters.genres.length > 0) {
+        params.genre = filters.genres[0]; // Backend accepts single genre
+      }
+      if (filters.year) params.year = filters.year;
+      if (filters.status) params.status = filters.status;
+      if (filters.sort) {
+        // Map frontend sort to backend sort
+        const sortMap: Record<string, string> = {
+          'POPULARITY_DESC': 'popularity',
+          'SCORE_DESC': 'score',
+          'TRENDING_DESC': 'popularity',
+          'UPDATED_AT_DESC': 'year',
+        };
+        params.sort = sortMap[filters.sort] || 'popularity';
+      }
+
+      const response = await apiClient.get('/anime/', { params });
+      
+      // Transform backend response to frontend format
+      const transformedMedia = (response.data.data || []).map((anime: any) => ({
+        id: anime.id,
+        title: {
+          romaji: anime.title_romaji || '',
+          english: anime.title_english || null,
+          native: anime.title_native || '',
+        },
+        description: anime.description || '',
+        coverImage: {
+          large: anime.cover_image || '',
+          medium: anime.cover_image || '',
+          extraLarge: anime.cover_image || '',
+        },
+        bannerImage: anime.banner_image || null,
+        averageScore: anime.average_score || 0,
+        meanScore: anime.average_score || 0,
+        popularity: anime.popularity || 0,
+        favourites: 0,
+        genres: anime.genres?.map((g: any) => g.name) || [],
+        status: anime.status || 'FINISHED',
+        episodes: anime.episodes || null,
+        duration: anime.duration || null,
+        season: anime.season || null,
+        seasonYear: anime.season_year || null,
+        format: 'TV' as const,
+        studios: {
+          nodes: anime.studios?.map((s: any) => ({ id: s.id, name: s.name })) || [],
+        },
+        startDate: {
+          year: anime.start_date ? new Date(anime.start_date).getFullYear() : null,
+          month: anime.start_date ? new Date(anime.start_date).getMonth() + 1 : null,
+          day: anime.start_date ? new Date(anime.start_date).getDate() : null,
+        },
+        endDate: {
+          year: anime.end_date ? new Date(anime.end_date).getFullYear() : null,
+          month: anime.end_date ? new Date(anime.end_date).getMonth() + 1 : null,
+          day: anime.end_date ? new Date(anime.end_date).getDate() : null,
+        },
+        trailer: null,
+        tags: [],
+      }));
+      
+      return {
+        media: transformedMedia,
+        pageInfo: {
+          total: response.data.total || 0,
+          currentPage: response.data.page || 1,
+          lastPage: Math.ceil((response.data.total || 0) / (filters.perPage || 20)),
+          hasNextPage: response.data.page < Math.ceil((response.data.total || 0) / (filters.perPage || 20)),
+          perPage: filters.perPage || 20,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching anime from backend:', error);
+      // Fallback to AniList
+      return this.searchAnime(filters);
+    }
+  },
+
+  async getAnimeByIdFromBackend(id: number): Promise<Anime | null> {
+    try {
+      const response = await apiClient.get(`/anime/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching anime by ID from backend:', error);
+      // Fallback to AniList
+      return this.getAnimeById(id);
+    }
+  },
+
+  async getEpisodesFromBackend(animeId: number): Promise<Episode[]> {
+    try {
+      const response = await apiClient.get(`/episodes/anime/${animeId}`);
+      return response.data.data || [];
+    } catch (error) {
+      console.error('Error fetching episodes from backend:', error);
+      // Fallback to generated episodes
+      return this.getEpisodes(animeId);
+    }
+  },
+
+  async searchAnimeBackend(query: string, limit: number = 10): Promise<Anime[]> {
+    try {
+      const response = await apiClient.get('/anime/search', {
+        params: { q: query, limit },
+      });
+      return response.data || [];
+    } catch (error) {
+      console.error('Error searching anime from backend:', error);
+      // Fallback to AniList search
+      return this.searchAnime({ search: query, perPage: limit }).then(res => res.media);
+    }
   },
 };

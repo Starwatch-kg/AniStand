@@ -26,17 +26,23 @@ export const Home: React.FC = () => {
     <Layout>
       {trending.length > 0 && <HeroSection animes={trending.slice(0, 5)} />}
       
-      <div className="w-full py-8">
+      <div className="w-full py-12 stagger-children">
         {currentSeason.length > 0 && (
-          <AnimeCarousel title="Сейчас смотрят" animes={currentSeason} />
+          <div className="mb-8">
+            <AnimeCarousel title="Сейчас смотрят" animes={currentSeason} />
+          </div>
         )}
         
         {trending.length > 0 && (
-          <AnimeCarousel title="С высокой оценкой" animes={trending} />
+          <div className="mb-8">
+            <AnimeCarousel title="С высокой оценкой" animes={trending} />
+          </div>
         )}
         
         {popular.length > 0 && (
-          <AnimeCarousel title="Фильмы" animes={popular.filter(a => a.format === 'MOVIE')} />
+          <div className="mb-8">
+            <AnimeCarousel title="Фильмы" animes={popular.filter(a => a.format === 'MOVIE')} />
+          </div>
         )}
       </div>
     </Layout>

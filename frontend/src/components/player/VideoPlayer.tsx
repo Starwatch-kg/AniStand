@@ -242,7 +242,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-black rounded-lg overflow-hidden group"
+      className="relative w-full bg-black rounded-2xl overflow-hidden group shadow-2xl border border-white/10"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >

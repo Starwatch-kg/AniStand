@@ -83,9 +83,12 @@ export const Catalog: React.FC = () => {
 
   return (
     <Layout>
-      <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-8">
-        {/* Search Bar */}
-        <div className="mb-8">
+      <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12">
+        {/* Enhanced Search Bar */}
+        <div className="mb-10 animate-slide-fade-in">
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-8 text-gradient-animated">
+            Каталог аниме
+          </h1>
           <form onSubmit={handleSearch} className="flex gap-4">
             <div className="flex-1">
               <Input
@@ -96,14 +99,14 @@ export const Catalog: React.FC = () => {
                 icon={<Search size={20} />}
               />
             </div>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="primary" className="hover-glow">
               Найти
             </Button>
             <Button
               type="button"
               variant="secondary"
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 glass-morphism"
             >
               <Filter size={20} />
               Фильтры
@@ -111,9 +114,9 @@ export const Catalog: React.FC = () => {
           </form>
         </div>
 
-        {/* Filters Panel */}
+        {/* Enhanced Filters Panel */}
         {showFilters && (
-          <div className="bg-dark-card rounded-lg p-6 mb-8">
+          <div className="glass-morphism rounded-2xl p-8 mb-10 border border-white/10 shadow-depth-lg animate-scale-in">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white">Фильтры</h3>
               <button
@@ -229,9 +232,11 @@ export const Catalog: React.FC = () => {
                 Найдено {searchResults.pageInfo.total} результатов
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 stagger-children">
               {searchResults.media.map((anime) => (
-                <AnimeCard key={anime.id} anime={anime} />
+                <div key={anime.id}>
+                  <AnimeCard anime={anime} />
+                </div>
               ))}
             </div>
             

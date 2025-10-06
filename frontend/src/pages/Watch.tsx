@@ -15,7 +15,24 @@ export const Watch: React.FC = () => {
   const [showEpisodeList, setShowEpisodeList] = useState(false);
 
   const currentEpisodeNumber = Number(episode);
-  const currentEpisode = episodes.find(ep => ep.number === currentEpisodeNumber);
+  
+  // Если нет эпизодов из API, создаем демо-эпизоды
+  const displayEpisodes = episodes.length > 0 ? episodes : 
+    (anime ? Array.from({ length: anime.episodes || 12 }, (_, i) => ({
+      id: `demo-${i + 1}`,
+      number: i + 1,
+      title: `Эпизод ${i + 1}`,
+      thumbnail: anime.coverImage.large,
+      sources: [{
+        id: 'demo',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        quality: '1080p',
+        type: 'mp4' as const
+      }],
+      duration: 1440,
+    })) : []);
+  
+  const currentEpisode = displayEpisodes.find(ep => ep.number === currentEpisodeNumber);
 
   useEffect(() => {
     // Mark as watching when component mounts
@@ -37,7 +54,7 @@ export const Watch: React.FC = () => {
 
   const handleEpisodeEnd = () => {
     // Auto-play next episode
-    if (currentEpisodeNumber < episodes.length) {
+    if (currentEpisodeNumber < displayEpisodes.length) {
       navigate(`/watch/${id}/${currentEpisodeNumber + 1}`);
     }
   };
@@ -49,7 +66,7 @@ export const Watch: React.FC = () => {
   };
 
   const goToNextEpisode = () => {
-    if (currentEpisodeNumber < episodes.length) {
+    if (currentEpisodeNumber < displayEpisodes.length) {
       navigate(`/watch/${id}/${currentEpisodeNumber + 1}`);
     }
   };
@@ -133,13 +150,13 @@ export const Watch: React.FC = () => {
             className="flex items-center gap-3 bg-primary/20 backdrop-blur-md border border-primary/30 hover:bg-primary/30 shadow-xl hover:scale-105 transition-all px-8 py-4 w-full md:w-auto"
           >
             <List size={24} />
-            Все эпизоды ({episodes.length})
+            Все эпизоды ({displayEpisodes.length})
           </Button>
 
           <Button
             variant="secondary"
             onClick={goToNextEpisode}
-            disabled={currentEpisodeNumber === episodes.length}
+            disabled={currentEpisodeNumber === displayEpisodes.length}
             className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 shadow-xl hover:scale-105 transition-all px-6 py-4 w-full md:w-auto"
           >
             Следующий
@@ -152,7 +169,7 @@ export const Watch: React.FC = () => {
           <div className="bg-dark-card/50 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-xl animate-slide-down">
             <h3 className="text-2xl font-bold text-white mb-6">Все эпизоды</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-h-[600px] overflow-y-auto custom-scrollbar">
-              {episodes.map((ep) => (
+              {displayEpisodes.map((ep) => (
                 <div
                   key={ep.id}
                   onClick={() => selectEpisode(ep.number)}

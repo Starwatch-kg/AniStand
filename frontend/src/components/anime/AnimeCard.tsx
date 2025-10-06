@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Play, Heart, Plus, Info, Eye } from 'lucide-react';
+import { Star, Play, Heart, Plus, Eye } from 'lucide-react';
 import { Anime } from '@/types';
 import { formatScore } from '@/utils/formatters';
 import { Card } from '@/components/ui';
 import { useLibrary } from '@/hooks';
+import { AnimeModal } from './AnimeModal';
 
 interface AnimeCardProps {
   anime: Anime;
@@ -21,6 +22,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
   const { isInFavorites, addAnime, removeAnime } = useLibrary();
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const isFavorite = isInFavorites(anime.id);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -42,8 +44,13 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
     navigate(`/watch/${anime.id}/1`);
   };
 
-  const handleViewDetails = () => {
-    navigate(`/anime/${anime.id}`);
+  const handleViewDetails = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setShowModal(true);
+  };
+
+  const handleCardClick = () => {
+    setShowModal(true);
   };
 
   if (layout === 'list') {
@@ -58,7 +65,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
           {/* Poster */}
           <div className="relative w-32 h-48 flex-shrink-0 rounded-lg overflow-hidden">
             <img
-              src={anime.coverImage.large}
+              src={anime.coverImage.extraLarge || anime.coverImage.large}
               alt={anime.title.romaji}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               loading="lazy"
@@ -143,109 +150,91 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
   }
 
   return (
-    <Card
-      hover
-      onClick={handleViewDetails}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group relative overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 rounded-xl"
-    >
+    <>
+      <AnimeModal 
+        anime={anime} 
+        isOpen={showModal} 
+        onClose={() => setShowModal(false)} 
+      />
+      
+      <Card
+        hover
+        onClick={handleCardClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="group relative overflow-hidden shadow-depth-md hover:shadow-primary-lg transition-all duration-500 rounded-2xl cursor-pointer border border-white/5 hover:border-primary/50 hover:-translate-y-2"
+      >
       {/* Poster */}
-      <div className="relative aspect-[2/3] overflow-hidden bg-dark-900">
+      <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-dark-800 to-dark-900">
         {!imageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-dark-800">
-            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         )}
         <img
-          src={anime.coverImage.large}
+          src={anime.coverImage.extraLarge || anime.coverImage.large}
           alt={anime.title.romaji}
-          className={`w-full h-full object-cover transition-all duration-500 ${
-            imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          } group-hover:scale-105`}
+          className={`w-full h-full object-cover transition-all duration-700 ${
+            imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
+          } group-hover:scale-105 group-hover:brightness-105`}
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
         />
 
-        {/* Minimal gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+        
+        {/* Subtle hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
 
-        {/* Minimal Quick Actions */}
-        {showQuickActions && isHovered && (
-          <div className="absolute inset-0 flex items-center justify-center gap-3">
-            <button
-              onClick={handleWatch}
-              className="p-4 bg-primary hover:bg-primary-dark text-white rounded-full transition-all hover:scale-110 shadow-xl"
-              title="Смотреть"
-            >
-              <Play size={24} className="fill-current" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewDetails();
-              }}
-              className="p-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full transition-all hover:scale-110 shadow-xl border border-white/20"
-              title="Подробнее"
-            >
-              <Info size={24} />
-            </button>
-          </div>
-        )}
-
-        {/* Minimal Rating Badge */}
+        {/* Compact Rating Badge - Top Right */}
         {anime.averageScore && (
-          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-            <Star size={14} className="text-yellow-400 fill-yellow-400" />
-            <span className="text-white text-sm font-bold">
+          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+            <Star size={12} className="text-yellow-400 fill-yellow-400" />
+            <span className="text-white text-xs font-bold">
               {formatScore(anime.averageScore)}
             </span>
           </div>
         )}
 
-        {/* Minimal Episodes Badge */}
+        {/* Compact Episodes Badge - Top Left */}
         {anime.episodes && (
-          <div className="absolute top-2 left-2 bg-primary/90 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+          <div className="absolute top-2 left-2 bg-primary/90 backdrop-blur-sm px-2 py-1 rounded-lg shadow-lg">
             <span className="text-white text-xs font-bold">
-              {anime.episodes} эп.
+              {anime.episodes}
             </span>
           </div>
         )}
 
-        {/* Minimal Favorite Button */}
+        {/* Title Overlay at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/80 to-transparent">
+          <h3 className="text-white font-bold text-sm line-clamp-2 leading-tight mb-1">
+            {anime.title.romaji}
+          </h3>
+          {anime.seasonYear && (
+            <p className="text-gray-400 text-xs">
+              {anime.seasonYear}
+            </p>
+          )}
+        </div>
+
+        {/* Favorite Button - Hidden by default, shows on hover */}
         <button
           onClick={handleToggleFavorite}
           className={`
-            absolute bottom-2 right-2 p-2 rounded-full transition-all
+            absolute top-2 right-2 p-2 rounded-full transition-all duration-300 shadow-lg
             ${isFavorite
-              ? 'bg-red-500 text-white scale-100'
-              : 'bg-black/50 backdrop-blur-sm text-white scale-0 group-hover:scale-100'
+              ? 'bg-red-500 text-white opacity-100'
+              : 'bg-black/60 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100'
             }
             hover:scale-110
           `}
           title={isFavorite ? 'Удалить из избранного' : 'В избранное'}
         >
-          <Heart size={18} className={isFavorite ? 'fill-current' : ''} />
+          <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
         </button>
       </div>
-
-      {/* Minimal Info */}
-      <div className="p-3 bg-dark-card">
-        <h3 className="text-white font-semibold text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-          {anime.title.romaji}
-        </h3>
-        {anime.genres && anime.genres.length > 0 && (
-          <p className="text-gray-500 text-xs line-clamp-1">
-            {anime.genres.slice(0, 2).join(' • ')}
-          </p>
-        )}
-      </div>
-
-      {/* Minimal Progress Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-dark-800">
-        <div className="h-full bg-primary transition-all" style={{ width: '0%' }} />
-      </div>
     </Card>
+    </>
   );
 };

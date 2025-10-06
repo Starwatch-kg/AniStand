@@ -3,12 +3,12 @@ import { Comment, CommentCreate, CommentUpdate, CommentReaction } from '@/types'
 
 export const commentService = {
   async getComments(animeId: number): Promise<Comment[]> {
-    const response = await apiClient.get(`/comments/${animeId}`);
-    return response.data;
+    const response = await apiClient.get(`/comments/anime/${animeId}`);
+    return response.data.data || [];
   },
 
   async createComment(commentData: CommentCreate): Promise<Comment> {
-    const response = await apiClient.post('/comments', commentData);
+    const response = await apiClient.post('/comments/', commentData);
     return response.data;
   },
 
