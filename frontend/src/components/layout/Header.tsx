@@ -1,134 +1,139 @@
-'use client';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, User, LogOut, Library, Star } from 'lucide-react';
+import { useAuth } from '@/hooks';
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { Search, Menu, X, User, Heart, History } from 'lucide-react';
-
-export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+      navigate(`/catalog?search=${searchQuery}`);
+      setSearchQuery('');
     }
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-anime-purple to-anime-pink rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">A</span>
-            </div>
-            <span className="text-xl font-bold gradient-text">AniStand</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-dark-900/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
+      <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo with gradient */}
+          <Link to="/" className="text-2xl font-bold group flex items-center gap-1">
+            <span className="text-white group-hover:text-primary transition-colors">Ani</span>
+            <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Stand</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
+          {/* Clean Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link
+              to="/"
+              className={`px-3 py-2 rounded-lg font-medium transition-all ${
+                location.pathname === '/' 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
               Главная
             </Link>
-            <Link href="/anime" className="text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
+            <Link
+              to="/catalog"
+              className={`px-3 py-2 rounded-lg font-medium transition-all ${
+                location.pathname === '/catalog' 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
               Каталог
             </Link>
-            <Link href="/genres" className="text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-              Жанры
-            </Link>
-            <Link href="/top" className="text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-              Топ
+            <Link
+              to="/library"
+              className={`px-3 py-2 rounded-lg font-medium transition-all ${
+                location.pathname === '/library' 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Библиотека
             </Link>
           </nav>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Поиск аниме..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-anime-purple focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            </div>
-          </form>
-
-          {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link href="/favorites" className="p-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-              <Heart className="h-5 w-5" />
-            </Link>
-            <Link href="/history" className="p-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-              <History className="h-5 w-5" />
-            </Link>
-            <Link href="/profile" className="p-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-              <User className="h-5 w-5" />
-            </Link>
-            <Link href="/auth/login" className="anime-button">
-              Войти
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-700 dark:text-gray-300"
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch} className="mb-4">
+          {/* Search & User */}
+          <div className="flex items-center gap-4">
+            {/* Modern Search */}
+            <form onSubmit={handleSearch} className="hidden lg:block">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Поиск аниме..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-anime-purple focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                  placeholder="Поиск аниме..."
+                  className="w-56 px-4 py-2 pl-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:bg-white/10 transition-all"
                 />
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
               </div>
             </form>
 
-            {/* Mobile Navigation */}
-            <nav className="space-y-2">
-              <Link href="/" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Главная
-              </Link>
-              <Link href="/anime" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Каталог
-              </Link>
-              <Link href="/genres" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Жанры
-              </Link>
-              <Link href="/top" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Топ
-              </Link>
-              <Link href="/favorites" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Избранное
-              </Link>
-              <Link href="/history" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                История
-              </Link>
-              <Link href="/profile" className="block py-2 text-gray-700 dark:text-gray-300 hover:text-anime-purple transition-colors">
-                Профиль
-              </Link>
-              <Link href="/auth/login" className="block py-2 text-anime-purple font-medium">
+            {/* Modern User Menu */}
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+                    <User size={16} className="text-white" />
+                  </div>
+                  <span className="text-white hidden md:block font-medium">{user?.username}</span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-dark-800 border border-white/10 rounded-lg shadow-2xl overflow-hidden backdrop-blur-xl">
+                    <Link
+                      to="/library"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Library size={18} />
+                      <span className="font-medium">Библиотека</span>
+                    </Link>
+                    <Link
+                      to="/library?tab=favorites"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Star size={18} />
+                      <span className="font-medium">Избранное</span>
+                    </Link>
+                    <div className="border-t border-white/10 my-1"></div>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all"
+                    >
+                      <LogOut size={18} />
+                      <span className="font-medium">Выйти</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-4 py-2 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-primary/50"
+              >
                 Войти
               </Link>
-            </nav>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </header>
   );
-}
+};
