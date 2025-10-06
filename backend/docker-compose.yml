@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: anistand_db
+    environment:
+      POSTGRES_DB: anistand
+      POSTGRES_USER: anistand
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - anistand_network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: anistand_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - anistand_network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # FastAPI Backend
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: anistand_backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://anistand:password@db:5432/anistand
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    depends_on:
+      - db
+      - redis
+    networks:
+      - anistand_network
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Celery Worker для парсинга
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anistand_celery_worker
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://anistand:password@db:5432/anistand
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - anistand_network
+    restart: unless-stopped
+    command: celery -A app.parsers.scheduler worker --loglevel=info
+
+  # Celery Beat для планировщика
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anistand_celery_beat
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://anistand:password@db:5432/anistand
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - anistand_network
+    restart: unless-stopped
+    command: celery -A app.parsers.scheduler beat --loglevel=info
+
+  # Flower для мониторинга Celery (опционально)
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anistand_flower
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    networks:
+      - anistand_network
+    restart: unless-stopped
+    command: celery -A app.parsers.scheduler flower --port=5555
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  anistand_network:
+    driver: bridge
