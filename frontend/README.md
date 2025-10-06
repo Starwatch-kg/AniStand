@@ -30,7 +30,12 @@ cp .env.local.example .env.local
 # Отредактируйте .env.local при необходимости
 ```
 
-3. **Запуск в режиме разработки:**
+3. **Тестирование подключения к backend:**
+```bash
+npm run test:connection
+```
+
+4. **Запуск в режиме разработки:**
 ```bash
 npm run dev
 ```
